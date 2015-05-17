@@ -1,0 +1,48 @@
+#! /usr/bin/env python3
+import sys
+symboltable = {}
+
+class Interpeter:
+    
+    def __init__(self, sourceLines):
+        global symboltable
+        symboltable = {}
+        lineNumber = 0
+        while lineNumber < len(sourceLines):
+            if sourceLines[lineNumber].startswith("define"):#  Defining a function
+                endLineNumber = lineNumber #  The line number that the function ends at
+                while endLineNumber < len(sourceLines):
+                    endLineNumber += 1
+                    if sourceLines[endLineNumber].strip() == "enddefinition":#  Search for an empty line
+                        break
+                func = Function( sourceLines[lineNumber:endLineNumber] ) #  Function Found Parse the heck out of it
+                symboltable[func.name] = func
+                lineNumber = endLineNumber
+            elif(sourceLines[lineNumber].strip() != ""):
+                print(eval(sourceLines[lineNumber], symboltable))
+            lineNumber += 1
+#        print(self.symboltable)
+
+class Function:
+    def __init__(self, sourceLines):
+        definition = sourceLines[0].split()
+        self.name = definition[1]
+        self.arguments = definition [2:-1]
+        self.codepaths = []#  an array of paths in the form of (bool expression, evaluate)
+        for i in sourceLines[1:]:
+            if i.strip() != "":# if the line is not blank
+                expression, condition = i.split("if")
+                self.codepaths.append( (condition, expression) )
+
+    def __call__ (self, *args):
+        global symboltable
+        if(not len(self.arguments) == len(args)):
+            print ("Function :: ", self.name, "has been called with the wrong number of arguements expected :", len(self.arguments), " gotten : ", len(args))
+        valueTable = dict(symboltable, **{"otherwise":True})
+        for i in range(len(self.arguments)):
+            valueTable[self.arguments[i]] = args[i]
+        for path in self.codepaths:
+            if(eval(path[0], valueTable)):
+                return eval(path[1], valueTable)
+
+Interpeter(open(sys.argv[1]).readlines())
