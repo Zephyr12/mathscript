@@ -6,6 +6,7 @@ class Interpeter:
     
     def __init__(self, sourceLines):
         global symboltable
+        sys.setrecursionlimit(10000)
         symboltable = {}
         lineNumber = 0
         while lineNumber < len(sourceLines):
