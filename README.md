@@ -1,2 +1,3 @@
 #  Mathscript :: A simple functional language example
-#  Example code in test.ms
+  
+Example code in test.ms
