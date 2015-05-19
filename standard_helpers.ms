@@ -18,4 +18,3 @@ define reduce reducer l as
     0 if len(l) == 0
     reducer(reduce(reducer, l[: -1]), l[-1]) if otherwise
 enddefinition
-reduce(lambda a, x: x, generate(1,3))

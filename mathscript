@@ -10,18 +10,30 @@ class Interpeter:
         symboltable = {}
         lineNumber = 0
         while lineNumber < len(sourceLines):
-            if sourceLines[lineNumber].startswith("define"):#  Defining a function
+            if sourceLines[lineNumber].startswith("define "):#  Defining a function
                 endLineNumber = lineNumber #  The line number that the function ends at
                 while endLineNumber < len(sourceLines):
                     endLineNumber += 1
-                    if sourceLines[endLineNumber].strip() == "enddefinition":#  Search for an empty line
+                    if sourceLines[endLineNumber].strip() == "enddefinition":#  Search for the end of the function the if ot
                         break
-                func = Function( sourceLines[lineNumber:endLineNumber] ) #  Function Found Parse the heck out of it
+                func = Function( sourceLines[lineNumber:endLineNumber + 1] ) #  Function Found Parse the heck out of it
                 symboltable[func.name] = func
                 lineNumber = endLineNumber
+
+            elif sourceLines[lineNumber].startswith("using "):
+                imports = sourceLines[lineNumber].split()[1:]
+                for i in imports:
+                    interp = Interpeter(open(i+".ms").readlines())
+
+            elif sourceLines[lineNumber].startswith("let "):
+                var = "".join(sourceLines[lineNumber].split()[1:])
+                name = var.split("=")[0]
+                value = var.split("=")[1]
+                symboltable[name]= eval(value, symboltable)
             elif(sourceLines[lineNumber].strip() != ""):
                 print(eval(sourceLines[lineNumber], symboltable))
             lineNumber += 1
+#            print (e)
 #        print(self.symboltable)
 
 class Function:
